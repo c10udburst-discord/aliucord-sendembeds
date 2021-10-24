@@ -26,6 +26,7 @@ class SendEmbedsExtra : Plugin() {
         val sendEmbeds = PluginManager.plugins.get("SendEmbeds")
         if (sendEmbeds == null)
             return
+        
         modes = ReflectUtils.getField(sendEmbeds, "modes") as MutableList<String>
         modes.add("selfbot")
         extraFunctions = ReflectUtils.getField(sendEmbeds, "extraFunctions") as HashMap<String, (Long,   String, String, String,  String, String,   String) -> Unit>
