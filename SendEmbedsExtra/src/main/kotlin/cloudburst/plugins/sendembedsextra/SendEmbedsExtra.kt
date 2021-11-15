@@ -16,6 +16,10 @@ import com.aliucord.Http
 import com.discord.utilities.rest.RestAPI
 import com.discord.utilities.analytics.AnalyticSuperProperties
 import com.discord.stores.StoreStream
+import java.net.URLEncoder
+import com.aliucord.utils.RxUtils.createActionSubscriber
+import com.aliucord.utils.RxUtils.subscribe
+import com.jaredrummler.android.colorpicker.ColorPickerDialog
 
 @AliucordPlugin
 class SendEmbedsExtra : Plugin() {
@@ -29,13 +33,19 @@ class SendEmbedsExtra : Plugin() {
         
         modes = ReflectUtils.getField(sendEmbeds, "modes") as MutableList<String>
         modes.add("selfbot")
+        modes.add("hidden link")
+        
         extraFunctions = ReflectUtils.getField(sendEmbeds, "extraFunctions") as HashMap<String, (Long,   String, String, String,  String, String,   String) -> Unit>
         extraFunctions.put("selfbot", ::sendSelfBotEmbed)
+        extraFunctions.put("hidden link", ::sendHiddenLinkEmbed)
     }
 
     override fun stop(context: Context) {
         modes.remove("selfbot")
         extraFunctions.remove("selfbot")
+
+        modes.remove("hidden link")
+        extraFunctions.remove("hidden link")
     }
 
     private fun sendSelfBotEmbed(channelId: Long, author: String, title: String, content: String, url: String, imageUrl: String, color: String) {
@@ -63,6 +73,25 @@ class SendEmbedsExtra : Plugin() {
         } catch (e: Throwable) {
             e.printStackTrace()
         }
+    }
+
+    private fun sendHiddenLinkEmbed(channelId: Long, author: String, title: String, content: String, url: String, imageUrl: String, color: String) {
+        val msg = "|".repeat(995) + "https://embed.rauf.workers.dev/?author=%s&title=%s&description=%s&color=%s&image=%s&redirect=%s".format(URLEncoder.encode(author, "utf-8"), URLEncoder.encode(title, "utf-8"), URLEncoder.encode(content, "utf-8"), color.replace("#", ""), URLEncoder.encode(imageUrl, "utf-8"), URLEncoder.encode(url, "utf-8"))
+        val message = RestAPIParams.Message(
+            msg,
+            NonceGenerator.computeNonce(ClockFactory.get()).toString(),
+            null,
+            null,
+            emptyList(),
+            null,
+            RestAPIParams.Message.AllowedMentions(
+                    emptyList(),
+                    emptyList(),
+                    emptyList(),
+                    false
+            )
+        )
+        RestAPI.api.sendMessage(channelId, message).subscribe(createActionSubscriber({ }))
     }
 
     private fun toColorInt(a: String): Int {
