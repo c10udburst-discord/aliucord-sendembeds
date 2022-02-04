@@ -19,9 +19,9 @@ import java.net.URLEncoder
 import com.aliucord.utils.RxUtils.createActionSubscriber
 import com.aliucord.utils.RxUtils.subscribe
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
-
 @AliucordPlugin
 class SendEmbedsExtra : Plugin() {
+    val prefix : String = "_ _||" + "\u200B||||".repeat(196) + "\u200B||" + "_ ".repeat(6)
     lateinit var modes : MutableList<String>
     lateinit var extraFunctions: HashMap<String, (Long,   String, String, String,  String, String,   String) -> Unit>
 
@@ -43,7 +43,7 @@ class SendEmbedsExtra : Plugin() {
     }
 
     private fun sendHiddenLinkEmbed(channelId: Long, author: String, title: String, content: String, url: String, imageUrl: String, color: String) {
-        val msg = "|".repeat(995) + "https://embed.rauf.workers.dev/?author=%s&title=%s&description=%s&color=%s&image=%s&redirect=%s".format(URLEncoder.encode(author, "utf-8"), URLEncoder.encode(title, "utf-8"), URLEncoder.encode(content, "utf-8"), color.replace("#", ""), URLEncoder.encode(imageUrl, "utf-8"), URLEncoder.encode(url, "utf-8"))
+        val msg = prefix + "https://embed.rauf.workers.dev/?author=%s&title=%s&description=%s&color=%s&image=%s&redirect=%s".format(URLEncoder.encode(author, "utf-8"), URLEncoder.encode(title, "utf-8"), URLEncoder.encode(content, "utf-8"), color.replace("#", ""), URLEncoder.encode(imageUrl, "utf-8"), URLEncoder.encode(url, "utf-8"))
         val message = RestAPIParams.Message(
             msg,
             NonceGenerator.computeNonce(ClockFactory.get()).toString(),
