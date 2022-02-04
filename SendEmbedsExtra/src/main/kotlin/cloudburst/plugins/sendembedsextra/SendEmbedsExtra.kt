@@ -8,7 +8,6 @@ import com.aliucord.PluginManager
 import com.aliucord.utils.ReflectUtils
 import com.aliucord.Utils
 import java.util.HashMap
-import cloudburst.plugins.sendembedsextra.utils.*
 import com.discord.models.domain.NonceGenerator
 import com.discord.utilities.time.ClockFactory
 import com.discord.restapi.RestAPIParams
@@ -32,47 +31,15 @@ class SendEmbedsExtra : Plugin() {
             return
         
         modes = ReflectUtils.getField(sendEmbeds, "modes") as MutableList<String>
-        modes.add("selfbot")
         modes.add("hidden link")
         
         extraFunctions = ReflectUtils.getField(sendEmbeds, "extraFunctions") as HashMap<String, (Long,   String, String, String,  String, String,   String) -> Unit>
-        extraFunctions.put("selfbot", ::sendSelfBotEmbed)
         extraFunctions.put("hidden link", ::sendHiddenLinkEmbed)
     }
 
     override fun stop(context: Context) {
-        modes.remove("selfbot")
-        extraFunctions.remove("selfbot")
-
         modes.remove("hidden link")
         extraFunctions.remove("hidden link")
-    }
-
-    private fun sendSelfBotEmbed(channelId: Long, author: String, title: String, content: String, url: String, imageUrl: String, color: String) {
-        try {
-            val msg = Message(
-                null,
-                false,
-                NonceGenerator.computeNonce(ClockFactory.get()).toString(),
-                Embed(
-                    Author(author),
-                    title, 
-                    content,
-                    url,
-                    EmbedImage(imageUrl),
-                    toColorInt(color)
-                )
-            )
-            Http.Request("https://discord.com/api/v9/channels/%d/messages".format(channelId), "POST")
-                .setHeader("Authorization", ReflectUtils.getField(StoreStream.getAuthentication(), "authToken") as String?)
-                .setHeader("User-Agent", RestAPI.AppHeadersProvider.INSTANCE.userAgent)
-                .setHeader("X-Super-Properties", AnalyticSuperProperties.INSTANCE.superPropertiesStringBase64)
-                .setHeader("Accept", "*/*")
-                .executeWithJson(msg)
-            .text()
-        } catch (e: Throwable) {
-            e.printStackTrace()
-        }
     }
 
     private fun sendHiddenLinkEmbed(channelId: Long, author: String, title: String, content: String, url: String, imageUrl: String, color: String) {
