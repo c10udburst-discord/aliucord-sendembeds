@@ -57,6 +57,7 @@ class SendEmbedsExtra : Plugin() {
                     emptyList(),
                     false
             ),
+            null,
             null
         )
         RestAPI.api.sendMessage(channelId, message).subscribe(createActionSubscriber({ }))
