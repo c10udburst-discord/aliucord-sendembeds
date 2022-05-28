@@ -1,4 +1,4 @@
-## Plugins for [Aliucord](https://github.com/Aliucord)
+# Extra plugins for Aliucord Legacy
 
 Click on a plugin name to download, and then move the downloaded file to the `Aliucord/plugins` folder
 - [SendEmbedsExtra](https://github.com/c10udburst-discord/aliucord-sendembeds/raw/builds/SendEmbedsExtra.zip) |
